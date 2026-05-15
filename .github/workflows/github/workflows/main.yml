@@ -1,0 +1,21 @@
+name: Append-Only Protection
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Check for modifications or deletions
+        run: |
+          git diff --name-only --diff-filter=DM HEAD~1 HEAD | while read file; do
+            echo "❌ Değişiklik veya silme tespit edildi: $file"
+            echo "Bu repo sadece dosya EKLEME yapılabilir!"
+            exit 1
+          done
+          echo "✅ Sadece yeni dosyalar eklendi."
